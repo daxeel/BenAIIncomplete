@@ -32,6 +32,7 @@ import string
 import os
 from os.path import join
 import wikipedia
+import unirest
 
 #opening files and setting parameters
 #info file
@@ -186,6 +187,29 @@ while 1:
               location_id = i
           weather_com_result = pywapi.get_weather_from_weather_com(location_id)
           print "\nIt is " + string.lower(weather_com_result['current_conditions']['text']) + " and " + weather_com_result['current_conditions']['temperature'] + "*C now in " + weatherlocation + "\n"
+
+#Abbreviations code
+      elif "fullform" in order or "full form" in order or "abbreviation" in order:
+          '''
+          USE CASE
+          Ask : What is the fullform of cs?
+          ASK : Fullform of dbms
+          Ask : Can you tell me the full form of un?
+          Ask : May i know the abbreviation of be?
+          '''
+          if order[-1] == '?' or order[-1] == '.':short_form = order[order.index('of') + 3:-1]
+          else:short_form = order[order.index('of') + 3::]
+          response = unirest.get("https://daxeel-abbreviations-v1.p.mashape.com/popular/" + short_form,
+              headers={"X-Mashape-Key": "PrBoJLqhkamshQx9zzSviE4YygGdp1nJ5tQjsn1cDZCdBmPygU"}
+          )
+          json_data = response.body
+          if json_data['fullform'] != "Not found":
+            	fullform = json_data['fullform']
+            	meaning = json_data['meaning']
+            	print "\nFullform of " + short_form + " is " + fullform
+            	print "\nMeaning of " + short_form + " is " + meaning + "\n"
+          else:
+          	  print "Abbreviation of " + short_form + " not found."
 
 #Math code
  #input: math              
